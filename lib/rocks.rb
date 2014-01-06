@@ -5,6 +5,7 @@ require 'rocks/util'
 require 'rocks/dependencies'
 require 'rocks/controller'
 require 'rocks/file_model'
+require 'pry'
 	
 	module Rocks
 		class Application

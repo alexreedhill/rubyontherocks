@@ -1,7 +1,10 @@
 require 'erubis'
+require 'rocks/file_model'
 
 module Rocks
-	class Controller
+	class Controller 	
+		include Rocks::Model
+		
 		def initialize(env)
 			@env = env
 		end
