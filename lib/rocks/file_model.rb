@@ -37,6 +37,13 @@ module Rocks
 				end
 			end
 
+			def self.find_all_by_submitter(env)
+				files = Dir["db/quotes/*.json"]
+				file_models = files.map { |f| FileModel.new f }
+				submitter = env['PATH_INFO'].gsub('/quotes/submitter/', '')
+				file_models.collect { |f| f if f['submitter'] == submitter }.compact
+			end
+
 			def self.create(attrs)
 			    hash = {}
 			    hash["submitter"] = attrs["submitter"] || ""
@@ -59,15 +66,15 @@ module Rocks
 				if env["REQUEST_METHOD"] == 'POST'
 					quote = FileModel.find(id)
 					hash = {}
-					hash["submitter"] = quote["submitter"] || ""
+					hash["submitter"] = "Alexander"
 					hash["quote"] = quote["quote"] || ""
 					hash["attribution"] = quote["attribution"] || "" 
 					File.open("db/quotes/#{id}.json", "w", hash) do |f|
 						f.write MultiJson.dump(hash)
 					end
 				end
+				FileModel.new "db/quotes/#{id}.json"
 			end
-
 
 		end
 	end
