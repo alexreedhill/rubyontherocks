@@ -1,4 +1,5 @@
 require 'multi_json'
+require 'pry'
 
 module Rocks
 	module Model
@@ -47,17 +48,26 @@ module Rocks
 			    highest = names.map { |b| b[0...-5].to_i }.max
 			    id = highest + 1
 
-			    File.open("db/quotes/#{id}.json", "w") do |f|
-			      f.write <<-TEMPLATE
-{
-	"submitter" : "#{hash["submitter"]}",
-	"quote" : "#{hash["quote"]}",
-	"attribution" : "#{hash["attribution"]}"
-} 
-TEMPLATE
+			    File.open("db/quotes/#{id}.json", "w", hash) do |f|
+			      f.write MultiJson.dump(hash)
 					end
-				  FileModel.new "db/quotes/#{id}.json"
+			  FileModel.new "db/quotes/#{id}.json"
+			end
+
+			def self.save(env)
+				id = 1
+				if env["REQUEST_METHOD"] == 'POST'
+					quote = FileModel.find(id)
+					hash = {}
+					hash["submitter"] = quote["submitter"] || ""
+					hash["quote"] = quote["quote"] || ""
+					hash["attribution"] = quote["attribution"] || "" 
+					File.open("db/quotes/#{id}.json", "w", hash) do |f|
+						f.write MultiJson.dump(hash)
+					end
 				end
+			end
+
 
 		end
 	end
