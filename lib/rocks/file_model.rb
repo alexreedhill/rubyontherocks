@@ -40,8 +40,8 @@ module Rocks
 			def self.find_all_by_submitter(env)
 				files = Dir["db/quotes/*.json"]
 				file_models = files.map { |f| FileModel.new f }
-				submitter = env['PATH_INFO'].gsub('/quotes/submitter/', '')
-				file_models.collect { |f| f if f['submitter'] == submitter }.compact
+				submitter = env['PATH_INFO'].gsub('/quotes/submitter/', '').gsub('%20', '_')
+				Array(file_models.collect { |f| f if f['submitter'].gsub(' ', '_') == submitter }.compact)
 			end
 
 			def self.create(attrs)
