@@ -17,7 +17,7 @@ module Rocks
 			end
 
 			def [](name)
-				@hash[name.to_s]				
+				@hash[name.to_s]
 			end
 
 			def []=(name, value)
@@ -29,26 +29,11 @@ module Rocks
 				files.map { |f| FileModel.new f }
 			end
 
-			def self.find(id)
-				begin
-					FileModel.new("db/quotes/#{id}.json")
-				rescue
-					return nil
-				end
-			end
-
-			def self.find_all_by_submitter(env)
-				files = Dir["db/quotes/*.json"]
-				file_models = files.map { |f| FileModel.new f }
-				submitter = env['PATH_INFO'].gsub('/quotes/submitter/', '').gsub('%20', '_')
-				Array(file_models.collect { |f| f if f['submitter'].gsub(' ', '_') == submitter }.compact)
-			end
-
 			def self.create(attrs)
 			    hash = {}
 			    hash["submitter"] = attrs["submitter"] || ""
 			    hash["quote"] = attrs["quote"] || ""
-			    hash["attribution"] = attrs["attribution"] || "" 
+			    hash["attribution"] = attrs["attribution"] || ""
 
 			    files = Dir["db/quotes/*.json"]
 			    names = files.map { |f| f.split("/")[-1] }
@@ -68,13 +53,39 @@ module Rocks
 					hash = {}
 					hash["submitter"] = "Alexander"
 					hash["quote"] = quote["quote"] || ""
-					hash["attribution"] = quote["attribution"] || "" 
+					hash["attribution"] = quote["attribution"] || ""
 					File.open("db/quotes/#{id}.json", "w", hash) do |f|
 						f.write MultiJson.dump(hash)
 					end
 				end
 				FileModel.new "db/quotes/#{id}.json"
 			end
+
+			def self.find(id)
+				begin
+					FileModel.new("db/quotes/#{id}.json")
+				rescue
+					return nil
+				end
+			end
+
+			def self.find_all_by_submitter(env)
+				files = Dir["db/quotes/*.json"]
+				file_models = files.map { |f| FileModel.new f }
+				submitter = env['PATH_INFO'].gsub('/quotes/submitter/', '').gsub('%20', '_')
+				Array(file_models.select { |f| f['submitter'].gsub(' ', '_') == submitter }.compact)
+			end
+
+			# def method_missing(method_name, *arguments, &block)
+			#   if method_name.to_s =~ /^find_all_by_(.*)/
+			#   	files = Dir["db/quotes/*.json"]
+			#   	file_models = files.map { |f| FileModel.new f }
+			#   	submitter = env['PATH_INFO'].gsub("/quotes/#{$1}/", '').gsub('%20', '_')
+			#   	Array(file_models.select { |f| f[$1].gsub(' ', '_') == submitter }.compact)
+			#   else
+			#     super
+			#   end
+			# end
 
 		end
 	end
