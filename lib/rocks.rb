@@ -5,7 +5,7 @@ require 'rocks/util'
 require 'rocks/dependencies'
 require 'rocks/controller'
 require 'rocks/file_model'
-	
+
 	module Rocks
 		class Application
 			def call(env)
@@ -19,9 +19,13 @@ require 'rocks/file_model'
 				klass, act = get_controller_and_action(env)
 				controller = klass.new(env)
 				text = controller.send(act)
+				if controller.get_response
+					st, hd, rs = controller.get_response.to_a
+					[st, hd, [rs.body].flatten]
+				else
 					[200, {'Content-Type' => 'text/html'},
 						[text]]
-
+				end
 			end
 		end
 
