@@ -47,7 +47,7 @@ module Rocks
 		end
 
 		def render_response(*args)
-			response(render(*args))
+		  response(render(*args))
 		end
 	end
 end

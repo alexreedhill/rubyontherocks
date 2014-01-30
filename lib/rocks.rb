@@ -12,19 +12,22 @@ require 'rocks/file_model'
 				if env['PATH_INFO'] == '/favicon.ico'
 					return [404,
 				 		{'Content-Type' => 'text/html'}, []]
-				elsif env['PATH_INFO'] == '/'
-					return [301,
-						{'Location' => '/quotes/a_quote'}, []]
 				end
-				klass, act = get_controller_and_action(env)
+				klass, action = get_controller_and_action(env)
 				controller = klass.new(env)
-				text = controller.send(act)
+				locals = controller.send(action)
 				if controller.get_response
 					st, hd, rs = controller.get_response.to_a
 					[st, hd, [rs.body].flatten]
 				else
-					[200, {'Content-Type' => 'text/html'},
-						[text]]
+					controller_name = env["PATH_INFO"].split('/', 4)[1]
+					if locals.is_a? Array
+						locals = { controller_name => locals }
+					elsif locals.class != Hash && locals.class != Array
+						locals = { controller_name[0..-2] => locals }
+					end
+					st, hd, rs = controller.render_response(action, locals).to_a
+					[st, hd, [rs.body].flatten]
 				end
 			end
 		end
