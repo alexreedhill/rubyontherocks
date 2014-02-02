@@ -14,7 +14,7 @@ module Rocks
 			@env
 		end
 
-		def render(view_name, locals = {})
+		def render_view(view_name, locals = {})
 			filename = File.join 'app', 'views',
 				controller_name, "#{view_name}.html.erb"
 			template = File.read filename
@@ -46,8 +46,8 @@ module Rocks
 			@response
 		end
 
-		def render_response(*args)
-		  response(render(*args))
+		def render(*args)
+		  response(render_view(*args))
 		end
 	end
 end

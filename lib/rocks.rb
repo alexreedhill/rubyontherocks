@@ -26,7 +26,7 @@ require 'rocks/file_model'
 					elsif locals.class != Hash && locals.class != Array
 						locals = { controller_name[0..-2] => locals }
 					end
-					st, hd, rs = controller.render_response(action, locals).to_a
+					st, hd, rs = controller.render(action, locals).to_a
 					[st, hd, [rs.body].flatten]
 				end
 			end
